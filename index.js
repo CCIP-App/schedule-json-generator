@@ -20,10 +20,14 @@ extractSheets(
       session.zh.title = nullCoalesce(session.title_zh)
       session.zh.description = nullCoalesce(session.description_zh)
 
-      session.en = session.zh
+      session.en = {}
+      session.en.title = nullCoalesce(session.title_en)
+      session.en.description = nullCoalesce(session.description_en)
 
       delete session.title_zh
       delete session.description_zh
+      delete session.title_en
+      delete session.description_en
 
       // speaker
       session.speakers = []
@@ -40,10 +44,14 @@ extractSheets(
           speaker.zh.name = nullCoalesce(speaker.name_zh)
           speaker.zh.bio = nullCoalesce(speaker.bio_zh)
 
-          speaker.en = speaker.zh
+          speaker.en = {}
+          speaker.en.name = nullCoalesce(speaker.name_en)
+          speaker.en.bio = nullCoalesce(speaker.bio_en)
 
           delete speaker.name_zh
           delete speaker.bio_zh
+          delete speaker.name_en
+          delete speaker.bio_en
 
           session.speakers.push(speaker)
         }
