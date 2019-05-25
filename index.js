@@ -10,7 +10,8 @@ extractSheets(
     spreadsheetKey: config.spreadsheetKey
   },
   function(err, data) {
-		data.Session.shift();
+    if (err) console.log(err);
+    data.Session.shift();
     data.Speaker.shift();
 
     data.Session.forEach((session) => {
