@@ -38,7 +38,7 @@ extractSheets(
             return speaker.id === session['speaker' + i + 'id']
           })
 
-          speaker.avatar = speaker.avatar == null ? config.default_avatar : config.avatar_base_url + speaker.avatar
+          speaker.avatar = speaker.avatar == undefined ? config.default_avatar : config.avatar_base_url + speaker.avatar
 
           speaker.zh = {}
           speaker.zh.name = nullCoalesce(speaker.name_zh)
