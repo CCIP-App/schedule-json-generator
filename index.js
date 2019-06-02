@@ -34,26 +34,7 @@ extractSheets(
 
       for (i = 1; i <= 5; i++) {
         if (session['speaker' + i + 'id'] != null) {
-          speaker = data.Speaker.find((speaker) => {
-            return speaker.id === session['speaker' + i + 'id']
-          })
-
-          speaker.avatar = speaker.avatar == undefined ? config.default_avatar : config.avatar_base_url + speaker.avatar
-
-          speaker.zh = {}
-          speaker.zh.name = nullCoalesce(speaker.name_zh)
-          speaker.zh.bio = nullCoalesce(speaker.bio_zh)
-
-          speaker.en = {}
-          speaker.en.name = nullCoalesce(speaker.name_en)
-          speaker.en.bio = nullCoalesce(speaker.bio_en)
-
-          delete speaker.name_zh
-          delete speaker.bio_zh
-          delete speaker.name_en
-          delete speaker.bio_en
-
-          session.speakers.push(speaker)
+          session.speakers.push(session['speaker' + i + 'id'])
         }
 
         delete session['speaker' + i]
@@ -70,17 +51,69 @@ extractSheets(
 
       for (i = 1; i <= 3; i++) {
         if (session['tag' + i] != null) {
-          tag = data.Tag.find((tag) => {
-            return tag.id === session['tag' + i]
-          })
-
-          session.tag.push(tag)
+          session.tag.push(session['tag' + i])
         }
 
         delete session['tag' + i]
       }
     })
 
-    console.log(JSON.stringify(data.Session))
+    data.Speaker.forEach((speaker) => {
+      speaker.avatar = speaker.avatar == undefined ? config.default_avatar : config.avatar_base_url + speaker.avatar
+
+      speaker.zh = {}
+      speaker.zh.name = nullCoalesce(speaker.name_zh)
+      speaker.zh.bio = nullCoalesce(speaker.bio_zh)
+
+      speaker.en = {}
+      speaker.en.name = nullCoalesce(speaker.name_en)
+      speaker.en.bio = nullCoalesce(speaker.bio_en)
+
+      delete speaker.name_zh
+      delete speaker.bio_zh
+      delete speaker.name_en
+      delete speaker.bio_en
+    })
+
+    data.SessionType.forEach((type) => {
+      type.zh = {}
+      type.zh.name = nullCoalesce(type.name_zh)
+
+      type.en = {}
+      type.en.name = nullCoalesce(type.name_en)
+
+      delete type.name_zh
+      delete type.name_en
+    })
+
+    data.Room.forEach((room) => {
+      room.zh = {}
+      room.zh.name = nullCoalesce(room.name_zh)
+
+      room.en = {}
+      room.en.name = nullCoalesce(room.name_en)
+
+      delete room.name_zh
+      delete room.name_en
+    })
+
+    data.Tag.forEach((tag) => {
+      tag.zh = {}
+      tag.zh.name = nullCoalesce(tag.name_zh)
+
+      tag.en = {}
+      tag.en.name = nullCoalesce(tag.name_en)
+
+      delete tag.name_zh
+      delete tag.name_en
+    })
+
+    console.log(JSON.stringify({
+      "sessions": data.Session,
+      "speakers": data.Speaker,
+      "session_types": data.SessionType,
+      "rooms": data.Room,
+      "tags": data.Tag,
+    }))
   }
 )
