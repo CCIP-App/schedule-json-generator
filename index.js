@@ -47,11 +47,11 @@ extractSheets(
       }
 
       // tag
-      session.tag = []
+      session.tags = []
 
       for (i = 1; i <= 3; i++) {
         if (session['tag' + i] != null) {
-          session.tag.push(session['tag' + i])
+          session.tags.push(session['tag' + i])
         }
 
         delete session['tag' + i]
