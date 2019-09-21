@@ -78,34 +78,46 @@ extractSheets(
     data.SessionType.forEach((type) => {
       type.zh = {}
       type.zh.name = nullCoalesce(type.name_zh)
+      type.zh.description = nullCoalesce(type.description_zh)
 
       type.en = {}
       type.en.name = nullCoalesce(type.name_en)
+      type.en.description = nullCoalesce(type.description_en)
 
       delete type.name_zh
       delete type.name_en
+      delete type.description_zh
+      delete type.description_en
     })
 
     data.Room.forEach((room) => {
       room.zh = {}
       room.zh.name = nullCoalesce(room.name_zh)
+      room.zh.description = nullCoalesce(room.description_zh)
 
       room.en = {}
       room.en.name = nullCoalesce(room.name_en)
+      room.en.description = nullCoalesce(room.description_en)
 
       delete room.name_zh
       delete room.name_en
+      delete room.description_zh
+      delete room.description_en
     })
 
     data.Tag.forEach((tag) => {
       tag.zh = {}
       tag.zh.name = nullCoalesce(tag.name_zh)
+      tag.zh.description = nullCoalesce(tag.description_zh)
 
       tag.en = {}
       tag.en.name = nullCoalesce(tag.name_en)
+      tag.en.description = nullCoalesce(tag.description_en)
 
       delete tag.name_zh
       delete tag.name_en
+      delete tag.description_zh
+      delete tag.description_en
     })
 
     console.log(JSON.stringify({
