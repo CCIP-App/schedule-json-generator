@@ -32,7 +32,7 @@ extractSheets(
       // speaker
       session.speakers = []
 
-      for (i = 1; i <= 5; i++) {
+      for (i = 1; i <= 8; i++) {
         if (session['speaker' + i + 'id'] != null) {
           session.speakers.push(session['speaker' + i + 'id'])
         }
