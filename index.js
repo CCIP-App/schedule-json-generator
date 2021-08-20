@@ -5,9 +5,15 @@ function nullCoalesce(value) {
   return value == null ? "" : value
 }
 
+if (process.env.GCP_API_KEY === undefined) {
+  console.error("GCP_API_KEY require, create an API key here : https://console.developers.google.com/apis/credentials")
+  process.exit(1)
+}
+
 extractSheets(
   {
-    spreadsheetKey: config.spreadsheetKey
+    spreadsheetKey: config.spreadsheetKey,
+    credentials: process.env.GCP_API_KEY
   },
   function(err, data) {
     if (err) console.log(err);
