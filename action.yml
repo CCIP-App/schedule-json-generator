@@ -1,0 +1,30 @@
+# https://help.github.com/en/articles/metadata-syntax-for-github-actions
+name: Generate Schedule Json file
+description: Generate Schedule Json file
+author: docker
+branding:
+  icon: 'anchor'
+  color: 'blue'
+
+inputs:
+  gcp-api-key:
+    description: "GCP API Key, create an API key here : https://console.developers.google.com/apis/credentials"
+    type: string
+    required: true
+  spreadsheet-key:
+    description: "Google Spreadsheet key"
+    required: true
+  default-avatar:
+    description: "Default avatar"
+    required: true
+  avatar-base-url:
+    description: "Avatar base url"
+    required: true
+
+outputs:
+  output-json:
+    description: "Output json string"
+
+runs:
+  using: 'node16'
+  main: 'action.js'
