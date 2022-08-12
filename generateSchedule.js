@@ -52,7 +52,7 @@ async function generateSchedule(config) {
             // tag
             session.tags = []
 
-            for (i = 1; i <= 3; i++) {
+            for (i = 1; i <= 5; i++) {
               if (session['tag' + i] != null) {
                 session.tags.push(session['tag' + i])
               }
