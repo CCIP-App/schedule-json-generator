@@ -132,7 +132,7 @@ async function generateSchedule(config) {
     // speaker
     session.speakers = []
 
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 10; i++) {
       if (session['speaker' + i + 'id'] != null) {
         session.speakers.push(session['speaker' + i + 'id'])
       }
@@ -149,7 +149,7 @@ async function generateSchedule(config) {
     // tag
     session.tags = []
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 10; i++) {
       if (session['tag' + i] != null) {
         session.tags.push(session['tag' + i])
       }
