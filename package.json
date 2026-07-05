@@ -1,6 +1,6 @@
 {
   "name": "@ccip-app/schedule-json-generator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Generate OPass schedule JSON from a public Google Spreadsheet.",
   "type": "module",
   "exports": "./generateSchedule.js",
