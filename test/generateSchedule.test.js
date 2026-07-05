@@ -7,22 +7,26 @@ const SHEET_METADATA =
 const EDIT_PAGE_METADATA =
   '[[0,0,\\"0\\",[{\\"1\\":[[0,0,\\"Session\\"]]}]"],[1,0,\\"1\\",[{\\"1\\":[[0,0,\\"Speaker\\"]]}]"],[2,0,\\"2\\",[{\\"1\\":[[0,0,\\"SessionType\\"]]}]"],[3,0,\\"3\\",[{\\"1\\":[[0,0,\\"Room\\"]]}]"],[4,0,\\"4\\",[{\\"1\\":[[0,0,\\"Tag\\"]]}]"]]'
 
-async function withMockSheets(csvByGid, callback, metadata = SHEET_METADATA) {
+async function withMockFetch(mockFetch, callback) {
   const originalFetch = global.fetch
-  global.fetch = async (input) => {
-    const url = new URL(String(input))
-    if (!url.pathname.endsWith("/export")) {
-      return { ok: true, text: async () => metadata }
-    }
-
-    return { ok: true, text: async () => csvByGid[url.searchParams.get("gid")] }
-  }
+  global.fetch = mockFetch
 
   try {
     return await callback()
   } finally {
     global.fetch = originalFetch
   }
+}
+
+async function withMockSheets(csvByGid, callback, metadata = SHEET_METADATA) {
+  return withMockFetch(async (input) => {
+    const url = new URL(String(input))
+    if (!url.pathname.endsWith("/export")) {
+      return { ok: true, text: async () => metadata }
+    }
+
+    return { ok: true, text: async () => csvByGid[url.searchParams.get("gid")] }
+  }, callback)
 }
 
 test("generateScheduleObject builds OPass JSON shape from all public sheet tabs", async () => {
@@ -150,6 +154,45 @@ test("generateScheduleObject reports invalid config before fetching", async () =
   await assert.rejects(
     () => generateScheduleObject({ spreadsheetKey: "", default_avatar: "", avatar_base_url: "" }),
     /Config field spreadsheetKey must be a non-empty string/
+  )
+})
+
+test("generateScheduleObject reports missing spreadsheet separately from sharing errors", async () => {
+  await withMockFetch(
+    async () => ({ ok: false, status: 404 }),
+    async () => {
+      await assert.rejects(
+        () =>
+          generateScheduleObject({
+            spreadsheetKey: "missing-sheet",
+            default_avatar: "https://example.com/default.png",
+            avatar_base_url: "https://example.com/speakers/",
+          }),
+        /Spreadsheet not found\. Check config\.spreadsheetKey\./
+      )
+    }
+  )
+})
+
+test("generateScheduleObject reports private metadata pages as sharing errors", async () => {
+  const responses = [
+    { ok: true, text: async () => "<!doctype html><html><title>Sign in</title></html>" },
+    { ok: false, status: 404 },
+  ]
+
+  await withMockFetch(
+    async () => responses.shift(),
+    async () => {
+      await assert.rejects(
+        () =>
+          generateScheduleObject({
+            spreadsheetKey: "private-sheet",
+            default_avatar: "https://example.com/default.png",
+            avatar_base_url: "https://example.com/speakers/",
+          }),
+        /Failed to find sheet metadata\. Share the spreadsheet publicly or publish it to the web\./
+      )
+    }
   )
 })
 

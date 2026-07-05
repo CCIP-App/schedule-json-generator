@@ -56,6 +56,8 @@ function csvToObjects(csv) {
 }
 
 async function fetchSheetGids(spreadsheetKey) {
+  let spreadsheetNotFound = true
+
   for (const url of [
     `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/edit?usp=sharing`,
     `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/pubhtml`,
@@ -66,7 +68,14 @@ async function fetchSheetGids(spreadsheetKey) {
       if (Object.keys(gids).length > 0) {
         return gids
       }
+      spreadsheetNotFound = false
+    } else if (response.status !== 400 && response.status !== 404) {
+      spreadsheetNotFound = false
     }
+  }
+
+  if (spreadsheetNotFound) {
+    throw new Error("Spreadsheet not found. Check config.spreadsheetKey.")
   }
 
   throw new Error("Failed to find sheet metadata. Share the spreadsheet publicly or publish it to the web.")
