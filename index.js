@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const path = require("node:path")
-const generateSchedule = require("./generateSchedule")
+import { pathToFileURL } from "node:url"
+import { generateScheduleObject } from "./generateSchedule.js"
 
 function printHelp() {
   console.log(`Usage: schedule-json-generator [config.js]
@@ -9,27 +9,24 @@ function printHelp() {
 Generate OPass schedule JSON from a public Google Spreadsheet.
 
 Arguments:
-  config.js  Path to a CommonJS config file. Defaults to ./config.js.
+  config.js  Path to an ES module config file. Defaults to ./config.js.
 `)
 }
 
-async function main(argv = process.argv.slice(2)) {
+export async function main(argv = process.argv.slice(2)) {
   if (argv.includes("--help") || argv.includes("-h")) {
     printHelp()
     return
   }
 
-  const configPath = path.resolve(argv[0] || "config.js")
-  const config = require(configPath)
-  process.stdout.write(JSON.stringify(await generateSchedule.generateScheduleObject(config)))
+  const config = (await import(pathToFileURL(argv[0] || "config.js").href)).default
+  process.stdout.write(JSON.stringify(await generateScheduleObject(config)))
   process.stdout.write("\n")
 }
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     console.error(error.message)
     process.exitCode = 1
   })
 }
-
-module.exports = { main }

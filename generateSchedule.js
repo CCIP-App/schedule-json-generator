@@ -250,8 +250,5 @@ async function generateScheduleObject(config) {
 async function generateSchedule(config) {
   return JSON.stringify(await generateScheduleObject(config))
 }
-module.exports = generateSchedule
-module.exports.generateScheduleObject = generateScheduleObject
-module.exports._parseCsv = parseCsv
-module.exports._parseSheetGids = parseSheetGids
-module.exports._validateSheetShape = validateSheetShape
+export default generateSchedule
+export { generateScheduleObject }
