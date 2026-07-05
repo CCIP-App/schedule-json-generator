@@ -21,7 +21,7 @@ async function main(argv = process.argv.slice(2)) {
 
   const configPath = path.resolve(argv[0] || "config.js")
   const config = require(configPath)
-  process.stdout.write(await generateSchedule(config))
+  process.stdout.write(JSON.stringify(await generateSchedule.generateScheduleObject(config)))
   process.stdout.write("\n")
 }
 

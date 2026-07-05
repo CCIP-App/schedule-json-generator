@@ -1,4 +1,11 @@
 const SHEETS = ["Session", "Speaker", "SessionType", "Room", "Tag"]
+const REQUIRED_COLUMNS = {
+  Session: ["title_zh", "description_zh", "title_en", "description_en", "speaker1id", "tag1"],
+  Speaker: ["name_zh", "bio_zh", "name_en", "bio_en"],
+  SessionType: ["name_zh", "description_zh", "name_en", "description_en"],
+  Room: ["name_zh", "description_zh", "name_en", "description_en"],
+  Tag: ["name_zh", "description_zh", "name_en", "description_en"],
+}
 
 function parseCsv(csv) {
   const rows = []
@@ -89,7 +96,12 @@ async function fetchSheet(spreadsheetKey, sheet, gid) {
     throw new Error(`Failed to fetch ${sheet}: ${response.status} ${response.statusText}`)
   }
 
-  return csvToObjects(await response.text())
+  const body = await response.text()
+  if (/^\s*<!doctype html/i.test(body) || /^\s*<html/i.test(body)) {
+    throw new Error(`Failed to fetch ${sheet} as CSV. Share the spreadsheet publicly or publish it to the web.`)
+  }
+
+  return csvToObjects(body)
 }
 
 async function fetchSheets(spreadsheetKey) {
@@ -109,10 +121,57 @@ function nullCoalesce(value) {
   return value == null ? "" : value
 }
 
-async function generateSchedule(config) {
+function validateConfig(config) {
+  if (config == null || typeof config !== "object") {
+    throw new Error("Config must be an object.")
+  }
+
+  for (const key of ["spreadsheetKey", "default_avatar", "avatar_base_url"]) {
+    if (typeof config[key] !== "string" || config[key] === "") {
+      throw new Error(`Config field ${key} must be a non-empty string.`)
+    }
+  }
+}
+
+function validateSheetShape(data) {
+  for (const sheet of SHEETS) {
+    if (!Array.isArray(data[sheet])) {
+      throw new Error(`Spreadsheet data is missing sheet: ${sheet}`)
+    }
+
+    if ((sheet === "Session" || sheet === "Speaker") && data[sheet].length === 0) {
+      throw new Error(`${sheet} sheet must include the first human-readable note row.`)
+    }
+
+    const firstRow = data[sheet][0] || {}
+    const missing = REQUIRED_COLUMNS[sheet].filter((column) => !Object.hasOwn(firstRow, column))
+    if (missing.length > 0) {
+      throw new Error(`${sheet} sheet is missing required column(s): ${missing.join(", ")}`)
+    }
+  }
+}
+
+function localizeNameDescription(row) {
+  row.zh = {}
+  row.zh.name = nullCoalesce(row.name_zh)
+  row.zh.description = nullCoalesce(row.description_zh)
+
+  row.en = {}
+  row.en.name = nullCoalesce(row.name_en)
+  row.en.description = nullCoalesce(row.description_en)
+
+  delete row.name_zh
+  delete row.name_en
+  delete row.description_zh
+  delete row.description_en
+}
+
+async function generateScheduleObject(config) {
+  validateConfig(config)
   const data = await fetchSheets(config.spreadsheetKey)
-  data.Session.shift();
-  data.Speaker.shift();
+  validateSheetShape(data)
+  data.Session.shift()
+  data.Speaker.shift()
 
   data.Session.forEach((session) => {
     // title & description
@@ -175,59 +234,24 @@ async function generateSchedule(config) {
     delete speaker.bio_en
   })
 
-  data.SessionType.forEach((type) => {
-    type.zh = {}
-    type.zh.name = nullCoalesce(type.name_zh)
-    type.zh.description = nullCoalesce(type.description_zh)
+  data.SessionType.forEach(localizeNameDescription)
+  data.Room.forEach(localizeNameDescription)
+  data.Tag.forEach(localizeNameDescription)
 
-    type.en = {}
-    type.en.name = nullCoalesce(type.name_en)
-    type.en.description = nullCoalesce(type.description_en)
+  return {
+    sessions: data.Session,
+    speakers: data.Speaker,
+    session_types: data.SessionType,
+    rooms: data.Room,
+    tags: data.Tag,
+  }
+}
 
-    delete type.name_zh
-    delete type.name_en
-    delete type.description_zh
-    delete type.description_en
-  })
-
-  data.Room.forEach((room) => {
-    room.zh = {}
-    room.zh.name = nullCoalesce(room.name_zh)
-    room.zh.description = nullCoalesce(room.description_zh)
-
-    room.en = {}
-    room.en.name = nullCoalesce(room.name_en)
-    room.en.description = nullCoalesce(room.description_en)
-
-    delete room.name_zh
-    delete room.name_en
-    delete room.description_zh
-    delete room.description_en
-  })
-
-  data.Tag.forEach((tag) => {
-    tag.zh = {}
-    tag.zh.name = nullCoalesce(tag.name_zh)
-    tag.zh.description = nullCoalesce(tag.description_zh)
-
-    tag.en = {}
-    tag.en.name = nullCoalesce(tag.name_en)
-    tag.en.description = nullCoalesce(tag.description_en)
-
-    delete tag.name_zh
-    delete tag.name_en
-    delete tag.description_zh
-    delete tag.description_en
-  })
-
-  return JSON.stringify({
-    "sessions": data.Session,
-    "speakers": data.Speaker,
-    "session_types": data.SessionType,
-    "rooms": data.Room,
-    "tags": data.Tag,
-  })
+async function generateSchedule(config) {
+  return JSON.stringify(await generateScheduleObject(config))
 }
 module.exports = generateSchedule
+module.exports.generateScheduleObject = generateScheduleObject
 module.exports._parseCsv = parseCsv
 module.exports._parseSheetGids = parseSheetGids
+module.exports._validateSheetShape = validateSheetShape
