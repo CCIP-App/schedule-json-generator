@@ -91,6 +91,17 @@ npm test
 The tests cover the small local parsers. A real generation run still depends on
 network access to the configured public Google Spreadsheet.
 
+## Release check
+
+Before publishing, check the package contents:
+
+```sh
+npm run pack:check
+```
+
+The package should include the generator, CLI, sample config, README, and
+license.
+
 ## Maintenance notes
 
 - Do not commit `config.js`; it is local configuration.
