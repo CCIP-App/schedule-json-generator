@@ -18,7 +18,7 @@ npm install @ccip-app/schedule-json-generator
 ## Library usage
 
 ```js
-const generateSchedule = require("@ccip-app/schedule-json-generator")
+import generateSchedule from "@ccip-app/schedule-json-generator"
 
 const json = await generateSchedule({
   spreadsheetKey: "your-google-spreadsheet-id",
@@ -71,9 +71,11 @@ cp config-sample.js config.js
 Edit `config.js`:
 
 ```js
-config.spreadsheetKey = "your-google-spreadsheet-id"
-config.default_avatar = "https://example.com/default-avatar.png"
-config.avatar_base_url = "https://example.com/speaker/"
+export default {
+  spreadsheetKey: "your-google-spreadsheet-id",
+  default_avatar: "https://example.com/default-avatar.png",
+  avatar_base_url: "https://example.com/speaker/",
+}
 ```
 
 Generate JSON:

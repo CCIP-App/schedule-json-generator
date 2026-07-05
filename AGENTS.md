@@ -41,7 +41,7 @@ is intentionally dropped before JSON output.
 
 ## Local files
 
-- `config.js` is local configuration and is ignored by git.
+- `config.js` is local ES module configuration and is ignored by git.
 - Generated JSON such as `res.json` or `schedule.json` should not be treated as
   source unless a maintainer explicitly asks for it.
 
