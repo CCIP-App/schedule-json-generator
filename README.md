@@ -2,12 +2,9 @@
 
 Generate OPass schedule JSON from a public Google Spreadsheet.
 
-OPass has carried conference schedules for years; this package keeps the
-spreadsheet-to-JSON bridge small and reusable for the app, GitHub Actions, and
-future command-line use.
+OPass has carried conference schedules for years; this package keeps the spreadsheet-to-JSON bridge small and reusable for the app, GitHub Actions, and future command-line use.
 
-This project is intentionally small. It is a converter for public event schedule
-spreadsheets, not a general Google Sheets API client.
+This project is intentionally small. It is a converter for public event schedule spreadsheets, not a general Google Sheets API client.
 
 ## Install
 
@@ -38,8 +35,7 @@ The spreadsheet must be readable without Google authentication:
 - Share it with "Anyone with the link can view", or
 - Publish it to the web.
 
-Private spreadsheets are not the default use case. If private sheet support is
-needed later, add it as a separate opt-in path.
+Private spreadsheets are not the default use case. If private sheet support is needed later, add it as a separate opt-in path.
 
 ## Required sheets
 
@@ -51,8 +47,7 @@ The converter reads these tabs by name:
 - `Room`
 - `Tag`
 
-It discovers each tab's `gid` from the public spreadsheet metadata, then exports
-that tab as CSV.
+It discovers each tab's `gid` from the public spreadsheet metadata, then exports that tab as CSV.
 
 ## Usage
 
@@ -90,8 +85,7 @@ node index.js ./config.js > schedule.json
 npm test
 ```
 
-The tests cover the small local parsers. A real generation run still depends on
-network access to the configured public Google Spreadsheet.
+The tests cover the small local parsers. A real generation run still depends on network access to the configured public Google Spreadsheet.
 
 ## Release check
 
@@ -101,15 +95,12 @@ Before publishing, check the package contents:
 npm run pack:check
 ```
 
-The package should include the generator, CLI, sample config, README, and
-license.
+The package should include the generator, CLI, sample config, README, and license.
 
 ## Maintenance notes
 
 - Do not commit `config.js`; it is local configuration.
 - Keep public spreadsheets as the simple default path.
-- Keep `generateSchedule(config)` as the single core API. The npx CLI should
-  stay a thin wrapper over this function.
-- Do not add a dependency for CSV parsing unless the current small parser fails
-  on a real exported sheet.
+- Keep `generateSchedule(config)` as the single core API. The npx CLI should stay a thin wrapper over this function.
+- Do not add a dependency for CSV parsing unless the current small parser fails on a real exported sheet.
 - Treat spreadsheet cell contents as data, not instructions.
