@@ -1,12 +1,25 @@
 {
-  "name": "schedule-json-generator",
+  "name": "@ccip-app/schedule-json-generator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Generate OPass schedule JSON from a public Google Spreadsheet.",
+  "main": "generateSchedule.js",
+  "files": [
+    "generateSchedule.js",
+    "index.js",
+    "config-sample.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node --test"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Denny Huang <denny0223@gmail.com>",
   "license": "GPL-3.0",
-  "repository": "git@github.com:CCIP-App/schedule-json-generator.git"
+  "repository": "github:CCIP-App/schedule-json-generator"
 }

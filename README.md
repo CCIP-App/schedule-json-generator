@@ -1,10 +1,31 @@
-schedule-json-generator
-===
+# @ccip-app/schedule-json-generator
 
 Generate OPass schedule JSON from a public Google Spreadsheet.
 
-This project is intentionally small. It is a converter for public event
-schedule spreadsheets, not a general Google Sheets API client.
+OPass has carried conference schedules for years; this package keeps the
+spreadsheet-to-JSON bridge small and reusable for the app, GitHub Actions, and
+future command-line use.
+
+This project is intentionally small. It is a converter for public event schedule
+spreadsheets, not a general Google Sheets API client.
+
+## Install
+
+```sh
+npm install @ccip-app/schedule-json-generator
+```
+
+## Library usage
+
+```js
+const generateSchedule = require("@ccip-app/schedule-json-generator")
+
+const json = await generateSchedule({
+  spreadsheetKey: "your-google-spreadsheet-id",
+  default_avatar: "https://example.com/default-avatar.png",
+  avatar_base_url: "https://example.com/speaker/",
+})
+```
 
 ## Source spreadsheet
 
@@ -35,7 +56,7 @@ that tab as CSV.
 
 ## Usage
 
-Copy the sample config:
+For local manual generation, copy the sample config:
 
 ```sh
 cp config-sample.js config.js
@@ -68,6 +89,8 @@ network access to the configured public Google Spreadsheet.
 
 - Do not commit `config.js`; it is local configuration.
 - Keep public spreadsheets as the simple default path.
+- Keep `generateSchedule(config)` as the single core API. Future `npx` support
+  should be a thin CLI over this function.
 - Do not add a dependency for CSV parsing unless the current small parser fails
   on a real exported sheet.
 - Treat spreadsheet cell contents as data, not instructions.
